@@ -1,10 +1,54 @@
-import { ROWS, COLS } from "./constants";
+import { COLS, ROWS } from "./constants";
+import { Piece } from "./piece";
 
 export type Cell = string | null;
-export type Board = Cell[][];
 
-export function createEmptyBoard(): Board {
-  return Array.from({ length: ROWS }, () =>
-    Array.from({ length: COLS }, () => null)
-  );
+export class Board {
+  grid: Cell[][];
+
+  constructor() {
+    this.grid = Array.from({ length: ROWS }, () =>
+      Array.from({ length: COLS }, () => null)
+    );
+  }
+
+  isInside(x: number, y: number) {
+    return x >= 0 && x < COLS && y >= 0 && y < ROWS;
+  }
+
+  lockPiece(piece: Piece) {
+    for (let row = 0; row < piece.shape.length; row++) {
+      for (let col = 0; col < piece.shape[row].length; col++) {
+        if (piece.shape[row][col] === 0) continue;
+
+        const x = piece.x + col;
+        const y = piece.y + row;
+
+        if (this.isInside(x, y)) {
+          this.grid[y][x] = piece.color;
+        }
+      }
+    }
+  }
+
+  clearLines(): number {
+    let cleared = 0;
+
+    for (let y = ROWS - 1; y >= 0; y--) {
+      const isFull = this.grid[y].every((cell) => cell !== null);
+
+      if (isFull) {
+        this.grid.splice(y, 1);
+
+        // add an empty line on top
+        this.grid.unshift(Array.from({ length: COLS }, () => null));
+
+        cleared++;
+        y++; // recheck the current row (because rows have shifted down after splice)
+      }
+    }
+
+    return cleared;
+  }
+
 }

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tetris",
+  title: "Tetris Web",
   description: "Tetris game built with Next.js",
 };
 

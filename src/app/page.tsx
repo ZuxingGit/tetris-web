@@ -21,7 +21,7 @@ export default function Home() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const cellSize = 35;
+    const cellSize = 30;
 
     canvas.width = COLS * cellSize;
     canvas.height = ROWS * cellSize;
@@ -124,13 +124,54 @@ export default function Home() {
   }, []);
 
   return (
-  <main className="min-h-screen flex flex-col items-center justify-center bg-zinc-950">
-    <div className="text-white text-2xl py-1 mb-1 font-extrabold tracking-wide">Score: {score}</div>
-    <canvas
-      ref={canvasRef}
-      className="border border-zinc-700 rounded-xl"
-    />
+  <main className="min-h-screen flex items-center justify-evenly bg-linear-to-tr from-gray-800 via-gray-700 to-gray-900 px-85">
+    {/* HUD */}
+
+    {/* Score Card */}
+    <div className="px-6 py-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg shadow-black/40">
+      <div className="text-sm text-white/60 tracking-widest uppercase font-bold">
+        Score
+      </div>
+      <div className="text-2xl font-extrabold text-white tracking-tight">
+        {score}
+      </div>
+    </div>
+
+    <div className="flex flex-col items-center gap-6">
+      {/* Game Canvas Container */}
+      <div className="relative rounded-3xl p-4 border border-white/10 bg-white/4 backdrop-blur-xl shadow-2xl shadow-black/60">
+        {/* Glow effect */}
+        <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-white/10 to-transparent blur-2xl opacity-50 pointer-events-none" />
+
+        <canvas
+          ref={canvasRef}
+          className="relative rounded border-white/10 shadow-lg"
+        />
+      </div>
+
+      {/* Controls hint */}
+      <div className="text-white/60 text-sm tracking-wide flex items-center justify-center gap-2 flex-wrap">
+        <span className="inline-flex items-center justify-center min-w-8 px-2 py-1 rounded-md border border-white/10 bg-white/5 text-white/80 text-xs font-semibold">
+          ←
+        </span>
+        <span className="inline-flex items-center justify-center min-w-8 px-2 py-1 rounded-md border border-white/10 bg-white/5 text-white/80 text-xs font-semibold">
+          →
+        </span>
+        <span className="text-white/60">move</span>
+        <span className="text-white/30">·</span>
+        <span className="inline-flex items-center justify-center min-w-8 px-2 py-1 rounded-md border border-white/10 bg-white/5 text-white/80 text-xs font-semibold">
+          ↓
+        </span>
+        <span className="text-white/60">drop</span>
+        <span className="text-white/30">·</span>
+        <span className="inline-flex items-center justify-center min-w-12 px-2 py-1 rounded-md border border-white/10 bg-white/5 text-white/80 text-xs font-semibold">
+          Shift
+        </span>
+        <span className="text-white/60">rotate</span>
+      </div>
+    </div>
   </main>
 );
+
 
 }

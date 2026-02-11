@@ -40,7 +40,7 @@ export default function Home() {
 
     let lastTime = 0;
     let dropTimer = 0;
-    const dropInterval = 800; //speed of piece dropping, 500 is good for testing, 800 is good for playing
+    const dropInterval = 500; //speed of piece dropping, 500 is good for testing, 800 is good for playing
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!pieceRef.current || !boardRef.current) return;
@@ -124,9 +124,8 @@ export default function Home() {
   }, []);
 
   return (
-  <main className="min-h-screen flex flex-col items-center justify-center bg-black gap-4">
-    <div className="text-white text-xl font-bold">Score: {score}</div>
-
+  <main className="min-h-screen flex flex-col items-center justify-center bg-zinc-950">
+    <div className="text-white text-2xl py-1 mb-1 font-extrabold tracking-wide">Score: {score}</div>
     <canvas
       ref={canvasRef}
       className="border border-zinc-700 rounded-xl"

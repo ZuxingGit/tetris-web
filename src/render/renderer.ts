@@ -1,53 +1,102 @@
 import { Board } from "@/game/board";
-import { BOARD_WIDTH, BOARD_HEIGHT, CELL_SIZE, ROWS, COLS } from "@/game/constants";
+import { COLS, ROWS } from "@/game/constants";
+import { Piece } from "@/game/piece";
 
-export function clearScreen(ctx: CanvasRenderingContext2D) {
-  ctx.fillStyle = "black";
-  ctx.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-}
+export class Renderer {
+  private ctx: CanvasRenderingContext2D;
+  private cellSize: number;
 
-export function drawGrid(ctx: CanvasRenderingContext2D) {
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.lineWidth = 1;
+  constructor(ctx: CanvasRenderingContext2D, cellSize: number) {
+    this.ctx = ctx;
+    this.cellSize = cellSize;
+  }
 
-  // vertical lines
-  for (let c = 0; c <= COLS; c++) {
-    const x = c * CELL_SIZE;
+  clear() {
+    this.ctx.clearRect(0, 0, COLS * this.cellSize, ROWS * this.cellSize);
+  }
+
+  drawRoundedRect(x: number, y: number, w: number, h: number, r: number) {
+    const ctx = this.ctx;
+
     ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, BOARD_HEIGHT);
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  drawGrid() {
+    const ctx = this.ctx;
+
+    ctx.fillStyle = "#1f1f1f";
+    ctx.fillRect(0, 0, COLS * this.cellSize, ROWS * this.cellSize);
+
+    ctx.strokeStyle = "rgba(0, 0, 0, 1)";
+    ctx.lineWidth = 1;
+
+    for (let x = 0; x <= COLS; x++) {
+      ctx.beginPath();
+      ctx.moveTo(x * this.cellSize, 0);
+      ctx.lineTo(x * this.cellSize, ROWS * this.cellSize);
+      ctx.stroke();
+    }
+
+    for (let y = 0; y <= ROWS; y++) {
+      ctx.beginPath();
+      ctx.moveTo(0, y * this.cellSize);
+      ctx.lineTo(COLS * this.cellSize, y * this.cellSize);
+      ctx.stroke();
+    }
+  }
+
+  drawCell(x: number, y: number, color: string) {
+    const ctx = this.ctx;
+    const padding = 1;
+    const radius = 4;
+
+    const px = x * this.cellSize;
+    const py = y * this.cellSize;
+
+    const innerX = px + padding;
+    const innerY = py + padding;
+    const innerSize = this.cellSize - padding * 0;
+
+    // main fill
+    ctx.fillStyle = color;
+    this.drawRoundedRect(innerX, innerY, innerSize, innerSize, radius);
+    ctx.fill();
+
+    // subtle highlight
+    ctx.strokeStyle = "rgba(0, 0, 0)";
+    // ctx.lineWidth = 1;
+    this.drawRoundedRect(innerX, innerY, innerSize, innerSize, radius);
     ctx.stroke();
   }
 
-  // horizontal lines
-  for (let r = 0; r <= ROWS; r++) {
-    const y = r * CELL_SIZE;
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(BOARD_WIDTH, y);
-    ctx.stroke();
+  drawBoard(board: Board) {
+    for (let y = 0; y < board.grid.length; y++) {
+      for (let x = 0; x < board.grid[y].length; x++) {
+        const cell = board.grid[y][x];
+        if (!cell) continue;
+
+        this.drawCell(x, y, cell);
+      }
+    }
   }
-}
 
-export function drawBorder(ctx: CanvasRenderingContext2D) {
-  ctx.strokeStyle = "rgba(255,255,255,0.25)";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-}
+  drawPiece(piece: Piece) {
+    for (let row = 0; row < piece.shape.length; row++) {
+      for (let col = 0; col < piece.shape[row].length; col++) {
+        if (piece.shape[row][col] === 0) continue;
 
-export function drawBoard(ctx: CanvasRenderingContext2D, board: Board) {
-  for (let r = 0; r < board.length; r++) {
-    for (let c = 0; c < board[r].length; c++) {
-      const cell = board[r][c];
-      if (!cell) continue;
-
-      ctx.fillStyle = cell;
-      ctx.fillRect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-
-      // small inner border to look like tetris blocks
-      ctx.strokeStyle = "rgba(0,0,0,0.25)";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        this.drawCell(piece.x + col, piece.y + row, piece.color);
+      }
     }
   }
 }

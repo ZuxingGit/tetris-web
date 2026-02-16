@@ -12,8 +12,8 @@ export class Board {
     );
   }
 
-  isInside(x: number, y: number) {
-    return x >= 0 && x < COLS && y >= 0 && y < ROWS;
+  isInside(x: number, y: number, height: number) {
+    return x >= 0 && x < COLS && y >= -height && y < ROWS;
   }
 
   lockPiece(piece: Piece) {
@@ -24,7 +24,7 @@ export class Board {
         const x = piece.x + col;
         const y = piece.y + row;
 
-        if (this.isInside(x, y)) {
+        if (y >= 0 && this.isInside(x, y, piece.shape.length)) {
           this.grid[y][x] = piece.color;
         }
       }
@@ -49,6 +49,11 @@ export class Board {
     }
 
     return cleared;
+  }
+
+  gameOver(): boolean {
+    // if any cell in the top row is occupied, it's game over
+    return this.grid[0].some((cell) => cell !== null);
   }
 
 }

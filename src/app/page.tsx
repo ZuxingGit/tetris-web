@@ -12,7 +12,9 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const boardRef = useRef<Board | null>(null);
   const pieceRef = useRef<Piece | null>(null);
+  // const gameOverRef = useRef(false);
   const [score, setScore] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -80,6 +82,8 @@ export default function Home() {
     window.addEventListener("keydown", handleKeyDown);
 
     function loop(time: number) {
+      // if (gameOverRef.current) return;
+
       const delta = time - lastTime;
       lastTime = time;
 
@@ -102,6 +106,12 @@ export default function Home() {
 
           // spawn a new piece
           piece = spawnRandomPiece();
+          // game over check
+          if (board.gameOver()) {
+            // gameOverRef.current = true;
+            setGameOver(true);
+            return;
+          }
         }
         
         pieceRef.current = piece;
@@ -129,10 +139,10 @@ export default function Home() {
 
     {/* Score Card */}
     <div className="px-6 py-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg shadow-black/40">
-      <div className="text-sm text-white/60 tracking-widest uppercase font-bold">
+      <div className="text-sm text-white tracking-widest uppercase font-bold">
         Score
       </div>
-      <div className="text-2xl font-extrabold text-white tracking-tight">
+      <div className="text-2xl font-extrabold text-yellow-300 tracking-tight">
         {score}
       </div>
     </div>
@@ -147,6 +157,25 @@ export default function Home() {
           ref={canvasRef}
           className="relative rounded border-white/10 shadow-lg"
         />
+
+        {gameOver && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm rounded-3xl">
+            <div className="text-red-500 text-4xl font-extrabold tracking-tight">
+              Game Over
+            </div>
+
+            <div className="text-yellow-300 mt-2 text-lg font-bold">
+              Final Score: {score}
+            </div>
+
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-6 px-6 py-3 rounded-xl bg-white/20 border border-white/85 text-green-400 font-bold hover:bg-white/20 transition"
+            >
+              Restart
+            </button>
+          </div>
+        )}                  
       </div>
 
       {/* Controls hint */}

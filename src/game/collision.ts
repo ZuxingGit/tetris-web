@@ -10,10 +10,10 @@ export function hasCollision(board: Board, piece: Piece): boolean {
       const y = piece.y + row;
 
       // cross bottom/left/right border = collision
-      if (!board.isInside(x, y)) return true;
+      if (!board.isInside(x, y, piece.shape.length)) return true;
 
       // collide with existing blocks = collision
-      if (board.grid[y][x] !== null) return true;
+      if (y >= 0 && board.grid[y][x] !== null) return true;
     }
   }
 

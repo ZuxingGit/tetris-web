@@ -1,5 +1,3 @@
-import { TetrominoType, TETROMINO_COLORS, TETROMINO_SHAPES } from "./tetromino";
-
 export class Piece {
   shape: number[][];
   color: string;

@@ -10,6 +10,12 @@ import { Piece } from "@/game/piece";
 import { Pause } from "lucide-react";
 import { Leaderboard } from "@/components/Leaderboard";
 import { soundManager } from "@/audio/soundManager";
+import { EffectManager } from "@/effects/effctManager";
+import { createHeartEffect } from "@/effects/heartFly";
+import { createBirdEffect } from "@/effects/bidrFly";
+import { createCloudEffect } from "@/effects/cloudFly";
+import { createParticleEffects } from "@/effects/particleEffect";
+import { createSmokeEffects } from "@/effects/smokeEffect";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -26,6 +32,7 @@ export default function Home() {
   const [leaderboardVersion, setLeaderboardVersion] = useState(0);
   const [playerName, setPlayerName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const effectManagerRef = useRef<EffectManager | null>(null);
 
   // submit score to leaderboard
   const submitScore = async () => {
@@ -60,6 +67,10 @@ export default function Home() {
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    if (!effectManagerRef.current) {
+      effectManagerRef.current = new EffectManager();
+    }
 
     const cellSize = CELL_SIZE;
 
@@ -139,6 +150,9 @@ export default function Home() {
       const delta = time - lastTimeRef.current;
       lastTimeRef.current = time;
 
+      const dt = delta / 1000;
+      effectManagerRef.current?.update(dt);
+
       if (pausedRef.current) {
         renderer.clear();
         renderer.drawGrid();
@@ -170,10 +184,44 @@ export default function Home() {
             piece.y -= 1;
             board.lockPiece(piece);
 
-            const cleared = board.clearLines();
+            const result = board.clearLines();
 
-            if (cleared > 0) {
-              setScore((prev) => prev + cleared);
+            if (result.cleared > 0) {
+              setScore((prev) => prev + result.cleared);
+
+              // // create heart/bird/cloud effects for each cleared cell
+              // for (const cell of result.clearedCells) {
+              //   // const effect = createHeartEffect(
+              //   // const effect = createBirdEffect(
+              //   const effect = createCloudEffect(
+              //     cell.x * cellSize + cellSize / 2,
+              //     cell.y * cellSize + cellSize / 2
+              //   );
+              //   effectManagerRef.current?.add(effect);
+            // }
+
+            // create particle explosion for each cleared cell
+            // for (const cell of result.clearedCells) {
+            //   const px = cell.x * cellSize + cellSize / 2;
+            //   const py = cell.y * cellSize + cellSize / 2;
+            
+            //   const particles = createParticleEffects(px, py, 30);
+            //   for (const p of particles) {
+            //     effectManagerRef.current?.add(p);
+            //   }
+            // }
+
+              for (const cell of result.clearedCells) {
+                const px = cell.x * cellSize + cellSize / 2;
+                const py = cell.y * cellSize + cellSize / 2;
+
+                const smokes = createSmokeEffects(px, py, 6, cell.color);
+
+                for (const s of smokes) {
+                  effectManagerRef.current?.add(s);
+                }
+              }
+
               soundManager.play("clear");
             }
 
@@ -199,6 +247,7 @@ export default function Home() {
       renderer.drawGrid();
       renderer.drawBoard(board);
       renderer.drawPiece(pieceRef.current ?? piece);
+      effectManagerRef.current?.draw(ctx!);
 
       rafIdRef.current = requestAnimationFrame(loop);
     }

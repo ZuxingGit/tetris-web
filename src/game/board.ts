@@ -31,13 +31,18 @@ export class Board {
     }
   }
 
-  clearLines(): number {
+  clearLines(): { cleared: number; clearedCells: { x: number; y: number; color: string }[] } {
     let cleared = 0;
+    const clearedCells: { x: number; y: number; color: string }[] = [];
 
     for (let y = ROWS - 1; y >= 0; y--) {
       const isFull = this.grid[y].every((cell) => cell !== null);
 
       if (isFull) {
+        for (let x = 0; x < COLS; x++) {
+          clearedCells.push({ x, y, color: this.grid[y][x]! });
+        }
+
         this.grid.splice(y, 1);
 
         // add an empty line on top
@@ -48,7 +53,7 @@ export class Board {
       }
     }
 
-    return cleared;
+    return { cleared, clearedCells };
   }
 
   gameOver(): boolean {

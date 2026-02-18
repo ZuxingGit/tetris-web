@@ -66,13 +66,15 @@ export class EffectManager {
       e.x += e.vx * dt;
       e.y += e.vy * dt;
 
-      // gravity (pull down slightly)
-      e.vy += 120 * dt;
-
       if (e.type === "smoke") {
         e.vx *= 0.98;
         e.vy *= 0.98;
         e.vy -= 100 * dt; // extra upward drift
+      } else if (e.type === "bubble") {
+        e.vx += Math.sin(performance.now() / 250 + e.x) * 0.15;
+      } else {
+        // gravity (pull down slightly)
+        e.vy += 120 * dt;
       }
 
       e.rotation += e.rotationSpeed * dt;
@@ -177,6 +179,42 @@ export class EffectManager {
 
         ctx.beginPath();
         ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      if (e.type === "bubble") {
+        const alpha = Math.max(e.life / e.maxLife, 0);
+
+        const grow = 1 + (1 - alpha) * 0.8;
+        const r = e.size * grow;
+
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.9;
+
+        // edge of bubble
+        ctx.strokeStyle = e.color ?? "rgba(200,200,255,1)";
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // inner glow fill
+        ctx.globalAlpha = alpha * 0.15;
+        ctx.fillStyle = e.color ?? "rgba(200,200,255,0.4)";
+
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // highlighted small circle
+        ctx.globalAlpha = alpha * 0.5;
+        ctx.fillStyle = "rgba(255,255,255,1)";
+
+        ctx.beginPath();
+        ctx.arc(e.x - r * 0.3, e.y - r * 0.3, r * 0.18, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();

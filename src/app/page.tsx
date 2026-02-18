@@ -16,6 +16,7 @@ import { createBirdEffect } from "@/effects/bidrFly";
 import { createCloudEffect } from "@/effects/cloudFly";
 import { createParticleEffects } from "@/effects/particleEffect";
 import { createSmokeEffects } from "@/effects/smokeEffect";
+import { createBubbleEffects } from "@/effects/bubbleEffect";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -210,17 +211,31 @@ export default function Home() {
             //     effectManagerRef.current?.add(p);
             //   }
             // }
+              
+              // create smoke effect for each cleared cell
+              // for (const cell of result.clearedCells) {
+              //   const px = cell.x * cellSize + cellSize / 2;
+              //   const py = cell.y * cellSize + cellSize / 2;
 
+              //   const smokes = createSmokeEffects(px, py, 6, cell.color);
+
+              //   for (const s of smokes) {
+              //     effectManagerRef.current?.add(s);
+              //   }
+              // }
+
+              // bubble effect for the whole line
               for (const cell of result.clearedCells) {
                 const px = cell.x * cellSize + cellSize / 2;
                 const py = cell.y * cellSize + cellSize / 2;
 
-                const smokes = createSmokeEffects(px, py, 6, cell.color);
+                const bubbles = createBubbleEffects(px, py, cell.color, 1);
 
-                for (const s of smokes) {
-                  effectManagerRef.current?.add(s);
+                for (const b of bubbles) {
+                  effectManagerRef.current?.add(b);
                 }
               }
+
 
               soundManager.play("clear");
             }

@@ -9,7 +9,7 @@ import { spawnRandomPiece } from "@/game/spawn";
 import { Piece } from "@/game/piece";
 import { Pause } from "lucide-react";
 import { Leaderboard } from "@/components/Leaderboard";
-import SoundManager, { soundManager } from "@/audio/soundManager";
+import { soundManager } from "@/audio/soundManager";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);

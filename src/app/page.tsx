@@ -9,6 +9,7 @@ import { spawnRandomPiece } from "@/game/spawn";
 import { Piece } from "@/game/piece";
 import { Pause } from "lucide-react";
 import { Leaderboard } from "@/components/Leaderboard";
+import SoundManager, { soundManager } from "@/audio/soundManager";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -53,6 +54,7 @@ export default function Home() {
   }, [paused]);
 
   useEffect(() => {
+    soundManager.init();
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -92,6 +94,8 @@ export default function Home() {
         piece.x -= 1;
         if (hasCollision(board, piece)) {
           piece.x += 1;
+        } else {
+          soundManager.play("move");
         }
       }
 
@@ -99,6 +103,8 @@ export default function Home() {
         piece.x += 1;
         if (hasCollision(board, piece)) {
           piece.x -= 1;
+        } else {
+          soundManager.play("move");
         }
       }
 
@@ -106,6 +112,8 @@ export default function Home() {
         piece.y += 1;
         if (hasCollision(board, piece)) {
           piece.y -= 1;
+        } else {
+          soundManager.play("drop");
         }
       }
 
@@ -113,6 +121,7 @@ export default function Home() {
         const rotated = piece.rotateClockwise();
         if (!hasCollision(board, rotated)) {
           pieceRef.current = rotated;
+          soundManager.play("rotate");
         }
       }
     };
@@ -165,6 +174,7 @@ export default function Home() {
 
             if (cleared > 0) {
               setScore((prev) => prev + cleared);
+              soundManager.play("clear");
             }
 
             // spawn a new piece
@@ -176,6 +186,7 @@ export default function Home() {
               setGameOver(true);
               // keep the loop alive so restart can work
               rafIdRef.current = requestAnimationFrame(loop);
+              soundManager.play("gameover");
               return;
             }
           }

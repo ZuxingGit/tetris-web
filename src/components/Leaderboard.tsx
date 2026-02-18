@@ -27,7 +27,7 @@ export function Leaderboard() {
             key={i}
             className="flex w-full items-center gap-3 text-xl text-zinc-200"
           >
-            <span className="font-bold flex-1 truncate text-left">
+            <span className="text-white font-bold flex-1 truncate text-left">
               {i + 1}. {p.name}
             </span>
             <span className="font-semibold text-yellow-300 shrink-0 text-right tabular-nums">

@@ -75,6 +75,55 @@ export default function Home() {
 
     const cellSize = CELL_SIZE;
 
+    const clearEffectTypes = ["heart", "bird", "cloud", "particle", "smoke", "bubble"] as const;
+    type ClearEffectType = (typeof clearEffectTypes)[number];
+
+    const spawnRandomClearEffects = (
+      clearedCells: { x: number; y: number; color: string }[]
+    ) => {
+      const effectManager = effectManagerRef.current;
+      if (!effectManager || clearedCells.length === 0) return;
+
+      const chosen: ClearEffectType =
+        clearEffectTypes[Math.floor(Math.random() * clearEffectTypes.length)];
+
+
+      for (const cell of clearedCells) {
+        const px = cell.x * cellSize + cellSize / 2;
+        const py = cell.y * cellSize + cellSize / 2;
+
+        switch (chosen) {
+          case "heart": {
+            effectManager.add(createHeartEffect(px, py));
+            break;
+          }
+          case "bird": {
+            effectManager.add(createBirdEffect(px, py));
+            break;
+          }
+          case "cloud": {
+            effectManager.add(createCloudEffect(px, py));
+            break;
+          }
+          case "particle": {
+            const particles = createParticleEffects(px, py, 8);
+            for (const p of particles) effectManager.add(p);
+            break;
+          }
+          case "smoke": {
+            const smokes = createSmokeEffects(px, py, 2, cell.color);
+            for (const s of smokes) effectManager.add(s);
+            break;
+          }
+          case "bubble": {
+            const bubbles = createBubbleEffects(px, py, cell.color, 1);
+            for (const b of bubbles) effectManager.add(b);
+            break;
+          }
+        }
+      }
+    };
+
     canvas.width = COLS * cellSize;
     canvas.height = ROWS * cellSize;
 
@@ -190,53 +239,8 @@ export default function Home() {
             if (result.cleared > 0) {
               setScore((prev) => prev + result.cleared);
 
-              // // create heart/bird/cloud effects for each cleared cell
-              // for (const cell of result.clearedCells) {
-              //   // const effect = createHeartEffect(
-              //   // const effect = createBirdEffect(
-              //   const effect = createCloudEffect(
-              //     cell.x * cellSize + cellSize / 2,
-              //     cell.y * cellSize + cellSize / 2
-              //   );
-              //   effectManagerRef.current?.add(effect);
-            // }
-
-            // create particle explosion for each cleared cell
-            // for (const cell of result.clearedCells) {
-            //   const px = cell.x * cellSize + cellSize / 2;
-            //   const py = cell.y * cellSize + cellSize / 2;
-            
-            //   const particles = createParticleEffects(px, py, 30);
-            //   for (const p of particles) {
-            //     effectManagerRef.current?.add(p);
-            //   }
-            // }
-              
-              // create smoke effect for each cleared cell
-              // for (const cell of result.clearedCells) {
-              //   const px = cell.x * cellSize + cellSize / 2;
-              //   const py = cell.y * cellSize + cellSize / 2;
-
-              //   const smokes = createSmokeEffects(px, py, 6, cell.color);
-
-              //   for (const s of smokes) {
-              //     effectManagerRef.current?.add(s);
-              //   }
-              // }
-
-              // bubble effect for the whole line
-              for (const cell of result.clearedCells) {
-                const px = cell.x * cellSize + cellSize / 2;
-                const py = cell.y * cellSize + cellSize / 2;
-
-                const bubbles = createBubbleEffects(px, py, cell.color, 1);
-
-                for (const b of bubbles) {
-                  effectManagerRef.current?.add(b);
-                }
-              }
-
-
+              // randomly trigger one of six clear effects
+              spawnRandomClearEffects(result.clearedCells);
               soundManager.play("clear");
             }
 

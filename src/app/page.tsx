@@ -295,7 +295,7 @@ export default function Home() {
   };
 
   return (
-  <main className="min-h-screen w-full flex items-center justify-evenly bg-linear-to-tr from-gray-800 via-gray-700 to-gray-900 px-56 gap-18 py-16">
+  <main className="min-h-screen w-full flex items-center justify-evenly bg-linear-to-tr from-gray-800 via-gray-700 to-gray-900 px-56 gap-18 py-1">
     {/* ----Glassmorphism---- */}
     {/* Score Card */}
     <div className="w-25 pl-6 pr-6 py-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg shadow-black/40">
@@ -307,7 +307,7 @@ export default function Home() {
       </div>
     </div>
 
-    <div className="flex-3/5 flex flex-col items-center gap-6">
+    <div className="flex-3/5 flex flex-col items-center gap-2">
       {/* Game Canvas Container */}
       <div className="relative rounded-3xl p-4 border border-white/25 bg-black/50 backdrop-blur-xl shadow-2xl shadow-black/60">
         {/* Glow effect */}
@@ -406,7 +406,7 @@ export default function Home() {
     </div>
 
     {/* Leaderboard */}
-    <div className="flex-3/10 backdrop-blur-xl shadow-lg shadow-black/40">
+    <div className="flex-3/10 rounded-2xl backdrop-blur-xl shadow-lg shadow-black/40">
       <Leaderboard key={leaderboardVersion} />
     </div>
   </main>

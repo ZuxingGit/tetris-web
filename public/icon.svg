@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+    <title>Tetris Web</title>
+    <!-- T-tetromino mark (scaled to fill favicon) -->
+    <g fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round"
+        transform="translate(0 5)">
+        <rect x="1" y="1" width="10" height="10" rx="2" fill="#FBBF24" />
+        <rect x="11" y="1" width="10" height="10" rx="2" fill="#FBBF24" />
+        <rect x="21" y="1" width="10" height="10" rx="2" fill="#FBBF24" />
+        <rect x="11" y="11" width="10" height="10" rx="2" fill="#FBBF24" />
+    </g>
+</svg>

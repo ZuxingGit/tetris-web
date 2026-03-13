@@ -16,3 +16,4 @@
 - React: A JavaScript library for building user interfaces.
 - Canvas: Used for rendering the game board and pieces.
 - Supabase: A backend-as-a-service platform that provides a PostgreSQL database and authentication services. User scores are stored in the Supabase database, allowing for persistent score saving and ranking.
+- next.js: A React framework for server-side rendering and static site generation, used to build the web application.

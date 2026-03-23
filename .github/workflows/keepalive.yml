@@ -10,5 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ping Supabase
-        run: curl https://ienenxgpbbgefxvkmycp.supabase.co
+      - name: Keepalive ping
+        env:
+          KEEPALIVE_URL: ${{ secrets.KEEPALIVE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "${KEEPALIVE_URL:-}" ]; then
+            curl --fail-with-body --silent --show-error --location \
+              --max-time 30 \
+              -H "Accept: application/json" \
+              "${KEEPALIVE_URL}"
+            exit 0
+          fi
+
+          if [ -n "${SUPABASE_URL:-}" ] && [ -n "${SUPABASE_ANON_KEY:-}" ]; then
+            curl --fail-with-body --silent --show-error --location \
+              --max-time 30 \
+              -H "apikey: ${SUPABASE_ANON_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+              -H "Accept: application/json" \
+              "${SUPABASE_URL%/}/rest/v1/leaderboard?select=created_at&limit=1"
+            exit 0
+          fi
+
+          echo "Missing secrets. Set KEEPALIVE_URL (recommended, e.g. https://<your-domain>/api/leaderboard),"
+          echo "or set SUPABASE_URL + SUPABASE_ANON_KEY for direct PostgREST ping."
+          exit 1
